@@ -1,0 +1,29 @@
+{
+  "name": "google-ai-pro-family-invite",
+  "version": "0.0.1",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "build": "npm run build -w @family-invite/api && npm run build -w @family-invite/web",
+    "dev:api": "npm run start:dev -w @family-invite/api",
+    "dev:web": "npm run dev -w @family-invite/web",
+    "lint": "eslint apps --max-warnings=0",
+    "typecheck": "npm run typecheck -w @family-invite/api && npm run typecheck -w @family-invite/web",
+    "test": "npm run test -w @family-invite/api && npm run test -w @family-invite/web",
+    "test:integration": "npm run test:integration -w @family-invite/api",
+    "prisma:generate": "npm run prisma:generate -w @family-invite/api",
+    "db:migrate": "npm run db:migrate -w @family-invite/api",
+    "db:seed": "npm run db:seed -w @family-invite/api"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.2",
+    "eslint": "^9.39.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.54.0"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

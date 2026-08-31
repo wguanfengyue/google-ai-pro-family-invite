@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-family_invite}
+      POSTGRES_USER: ${POSTGRES_USER:-family_invite}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-local_only_password}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    volumes:
+      - redis_data:/data
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-family_invite}:${POSTGRES_PASSWORD:-local_only_password}@postgres:5432/${POSTGRES_DB:-family_invite}?schema=public
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      API_PORT: 3000
+      CARD_HASH_PEPPER: ${CARD_HASH_PEPPER:-local-development-pepper}
+      ADMIN_API_KEY: ${ADMIN_API_KEY:-local-development-admin-key}
+      INVITATION_EXECUTOR: ${INVITATION_EXECUTOR:-mock}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    command: ["sh", "-c", "npx prisma migrate deploy --schema apps/api/prisma/schema.prisma && node apps/api/dist/main.js"]
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres_data:
+  redis_data:
