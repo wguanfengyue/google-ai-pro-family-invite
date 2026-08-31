@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: family_invite
+          POSTGRES_USER: family_invite
+          POSTGRES_PASSWORD: local_only_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U family_invite -d family_invite"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+      redis:
+        image: redis:8-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://family_invite:local_only_password@localhost:5432/family_invite?schema=public
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      CARD_HASH_PEPPER: ci-only-pepper
+      ADMIN_API_KEY: ci-only-admin-key
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run prisma:generate
+      - run: npm run db:migrate
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test
+      - run: npm run test:integration
+      - run: npm run build
+      - run: docker compose config --quiet

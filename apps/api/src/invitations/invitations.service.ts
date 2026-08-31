@@ -10,8 +10,8 @@ import type { InvitationStatus} from '@prisma/client';
 import { Prisma } from '@prisma/client';
 import type { Queue } from 'bullmq';
 import { maskEmail, normalizeEmail } from '../common/mask-email';
-import type { CardsService } from '../cards/cards.service';
-import type { PrismaService } from '../prisma/prisma.service';
+import { CardsService } from '../cards/cards.service';
+import { PrismaService } from '../prisma/prisma.service';
 import { INVITATION_QUEUE, SEND_INVITATION_JOB } from './invitations.constants';
 
 export type InvitationView = {

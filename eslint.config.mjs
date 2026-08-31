@@ -17,7 +17,7 @@ export default tseslint.config(
   {
     files: ['**/*.ts'],
     rules: {
-      '@typescript-eslint/consistent-type-imports': 'error',
+      '@typescript-eslint/consistent-type-imports': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },

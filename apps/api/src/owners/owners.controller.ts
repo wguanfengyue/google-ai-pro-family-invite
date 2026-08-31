@@ -1,9 +1,8 @@
 import { Body, Controller, Get, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { AdminKeyGuard } from '../common/admin-key.guard';
-import type { CreateOwnerDto } from './dto/create-owner.dto';
-import type { UpdateOwnerDto } from './dto/update-owner.dto';
-import type { OwnersService} from './owners.service';
-import { type OwnerView } from './owners.service';
+import { CreateOwnerDto } from './dto/create-owner.dto';
+import { UpdateOwnerDto } from './dto/update-owner.dto';
+import { OwnersService, type OwnerView } from './owners.service';
 
 @Controller('v1/admin/owners')
 @UseGuards(AdminKeyGuard)

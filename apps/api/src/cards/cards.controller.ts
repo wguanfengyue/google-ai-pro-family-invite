@@ -1,7 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import type { CardsService} from './cards.service';
-import { type CardVerification } from './cards.service';
-import type { VerifyCardDto } from './dto/verify-card.dto';
+import { CardsService, type CardVerification } from './cards.service';
+import { VerifyCardDto } from './dto/verify-card.dto';
 
 @Controller('v1/cards')
 export class CardsController {

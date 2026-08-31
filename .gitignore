@@ -2,6 +2,8 @@
 node_modules/
 .pnpm-store/
 *.tsbuildinfo
+apps/api/prisma/seed.js
+apps/api/prisma/seed.d.ts
 
 # Build output
 dist/
