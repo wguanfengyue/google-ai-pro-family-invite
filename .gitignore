@@ -1,0 +1,42 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build output
+dist/
+coverage/
+.vite/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Browser sessions and automation artifacts
+playwright/.auth/
+storage-state*.json
+cookies*.json
+test-results/
+playwright-report/
+
+# Databases and backups
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+backups/
+
+# Logs
+*.log
+logs/
+
+# Editors and operating systems
+.DS_Store
+.idea/
+.vscode/
+
+# Temporary files
+tmp/
+.cache/
