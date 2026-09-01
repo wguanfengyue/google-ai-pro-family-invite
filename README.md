@@ -1,10 +1,10 @@
 <div align="center">
 
-# FamilyFlow
+# Gemini ai pro家庭组自助邀请
 
-### Gemini ai pro家庭组自助邀请
+### 验证卡密 · 自动预占席位 · 异步执行 · 进度可查
 
-验证卡密 · 自动预占席位 · 异步执行 · 进度可查
+
 
 [![CI](https://github.com/wguanfengyue/google-ai-pro-family-invite/actions/workflows/ci.yml/badge.svg)](https://github.com/wguanfengyue/google-ai-pro-family-invite/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/tag/wguanfengyue/google-ai-pro-family-invite?label=release)](https://github.com/wguanfengyue/google-ai-pro-family-invite/tags)
