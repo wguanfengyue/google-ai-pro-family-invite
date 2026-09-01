@@ -1,6 +1,8 @@
 import { BullModule } from '@nestjs/bullmq';
 import { Module } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { CardsModule } from '../cards/cards.module';
+import { BrowserInvitationExecutor } from './browser-invitation.executor';
 import { INVITATION_EXECUTOR } from './invitation-executor';
 import { INVITATION_QUEUE } from './invitations.constants';
 import { InvitationsController } from './invitations.controller';
@@ -15,7 +17,16 @@ import { MockInvitationExecutor } from './mock-invitation.executor';
     InvitationsService,
     InvitationsProcessor,
     MockInvitationExecutor,
-    { provide: INVITATION_EXECUTOR, useExisting: MockInvitationExecutor },
+    BrowserInvitationExecutor,
+    {
+      provide: INVITATION_EXECUTOR,
+      inject: [ConfigService, MockInvitationExecutor, BrowserInvitationExecutor],
+      useFactory: (
+        config: ConfigService,
+        mock: MockInvitationExecutor,
+        browser: BrowserInvitationExecutor,
+      ) => (config.get('INVITATION_EXECUTOR', 'mock') === 'browser' ? browser : mock),
+    },
   ],
 })
 export class InvitationsModule {}

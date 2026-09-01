@@ -38,7 +38,8 @@ sequenceDiagram
 - 母号表只保存匿名标签、状态和容量。
 - 管理接口通过 `x-admin-key` 保护；生产环境应在网关层增加速率限制、HTTPS 和更完整的管理员身份系统。
 - 默认 `MockInvitationExecutor` 只模拟成功结果，不会登录或控制 Google 账户。
+- `BrowserInvitationExecutor`（实验）只复用本地预认证 Chromium Profile，不执行密码登录、2FA 或验证码绕过；会话失效时任务失败并要求人工重新认证。
 
 ## 接入真实 Provider
 
-实现 `InvitationExecutor` 并在 `InvitationsModule` 中替换注入即可。Provider 必须基于服务条款允许的官方接口或人工确认流程，不应收集个人 Google 密码、Cookie、恢复邮箱或 2FA 密钥。
+实现 `InvitationExecutor` 并在 `InvitationsModule` 中替换注入即可。当前实验性浏览器 Provider 通过 `INVITATION_EXECUTOR=browser` 启用，Profile 仅保存在可信机器的本地目录；不应将密码、Cookie、Token、恢复邮箱或 2FA 密钥写入平台数据库、队列或代码仓库。真正的官方 Provider 仍需公开 API 或授权服务商。
