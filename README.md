@@ -50,6 +50,7 @@ FamilyFlow 是一个可运行、可测试、可容器化部署的全栈 MVP。�
 - **异步解耦**：BullMQ 队列只传递任务 ID，不传输邮箱、密码、Cookie、Token 或浏览器会话。
 - **隐私保护**：卡密只保存带 pepper 的安全哈希；公开任务接口只展示脱敏邮箱。
 - **可替换执行器**：外部邀请能力封装在 `InvitationExecutor` 接口后，默认安全 Mock。
+- **浏览器 Agent（实验）**：在管理员人工登录的独立 Chromium Profile 上复用会话，自动完成邀请页面操作；默认关闭，遇到重新认证或风控时失败并交由人工处理。
 - **工程化交付**：包含 Prisma migration、单元测试、接口集成测试、Docker Compose、Nginx 和 GitHub Actions CI。
 - **响应式界面**：Vue 3 卡通新粗野主义界面，支持冷暖主题、移动端布局和任务进度动画。
 
@@ -191,6 +192,32 @@ npm run dev:web
 
 Vite 开发服务器会将 `/api` 请求代理到 NestJS。
 
+### 浏览器 Agent（实验模式）
+
+浏览器执行器只复用预先登录的本地 Profile，不在平台数据库、队列或 Git 中保存 Google 密码、Cookie、Token 或 2FA。首次准备母号时，在可信机器上执行：
+
+```bash
+npx playwright install chromium
+npm run browser:login -w @family-invite/api -- demo-owner-01
+```
+
+在打开的浏览器中完成登录和必要的人工验证，回到终端按 Enter 关闭浏览器。然后使用以下变量启动 API：
+
+```bash
+INVITATION_EXECUTOR=browser \
+BROWSER_PROFILE_ROOT=.familyflow/browser-profiles \
+BROWSER_HEADLESS=true \
+npm run dev:api
+```
+
+先运行本地浏览器 smoke 测试确认 Playwright 环境：
+
+```bash
+npm run browser:smoke -w @family-invite/api
+```
+
+该模式依赖 Google 页面结构和有效会话，不保证长期稳定；验证码、2FA、重新登录或风控出现时任务会停止，不会尝试绕过。
+
 ## API 概览
 
 | 方法 | 路径 | 用途 | 权限 |
@@ -226,15 +253,15 @@ GitHub Actions 会执行依赖安装、Prisma Client 生成、数据库迁移、
 
 ## 安全边界
 
-项目明确不收集或保存：
+平台 API 和数据库明确不收集或保存：
 
 - Google 账号密码
 - 恢复邮箱和 2FA 密钥
-- Cookie、OAuth Token 或浏览器会话
-- Playwright storage state
+- Cookie、OAuth Token 或可导出的浏览器会话
+- Playwright storage state 文件
 - 明文卡密和真实母号凭证
 
-真实 Provider 只能通过服务条款允许的官方接口或人工确认流程实现，并必须放在 `InvitationExecutor` 接口之后。隐藏管理按钮不构成权限控制，所有管理权限都必须由后端校验。
+实验性浏览器 Agent 仅在本地 Profile 中复用已登录会话，并必须放在 `InvitationExecutor` 接口之后。隐藏管理按钮不构成权限控制，所有管理权限都必须由后端校验。
 
 如果用于生产环境，还应补充 HTTPS、速率限制、管理员登录、JWT/RBAC、审计日志、监控告警与备份恢复策略。
 
@@ -246,11 +273,12 @@ GitHub Actions 会执行依赖安装、Prisma Client 生成、数据库迁移、
 | 并发席位分配与任务幂等 | 已完成 |
 | BullMQ 异步任务与状态查询 | 已完成 |
 | Mock 邀请执行器 | 已完成 |
+| 本地浏览器 Agent（预认证 Profile） | 实验性完成，默认关闭 |
 | 卡通响应式用户页面 | 已完成 |
 | 母号容量管理面板 | MVP 已完成 |
 | 独立管理员页面与登录 | 规划中 |
 | JWT、RBAC 与审计日志 | 规划中 |
-| 符合服务条款的真实 Provider | 不在当前开源演示中提供 |
+| 符合服务条款的官方 Provider | 待有公开 API 或授权服务商后接入 |
 
 ## 版本与回滚
 
